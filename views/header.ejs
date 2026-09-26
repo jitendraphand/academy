@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= typeof title !== 'undefined' ? title + ' · ' : '' %>Salon Academy</title>
+<link rel="stylesheet" href="/css/style.css">
+<script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/">💈 Salon Academy</a>
+  <nav>
+    <% if (user) { %>
+      <span class="hello">Hi, <%= user.name.split(' ')[0] %> · <%= user.role %></span>
+      <% if (user.role === 'admin') { %><a class="btn small" href="/admin">Admin</a><% } else { %><a class="btn small" href="/dashboard">My Learning</a><% } %>
+      <a class="btn small ghost" href="/logout">Logout</a>
+    <% } else { %>
+      <a class="btn small ghost" href="/login">Login</a>
+      <a class="btn small" href="/register">Register with code</a>
+    <% } %>
+  </nav>
+</header>
+<main class="wrap">

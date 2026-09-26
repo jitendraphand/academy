@@ -1,0 +1,72 @@
+<%- include('header', { title: 'Admin panel' }) %>
+<h1>🛠️ Admin panel</h1>
+<% if (query.msg === 'code') { %><div class="alert green">✅ Invite code generated — share it with the candidate.</div><% } %>
+<% if (query.msg === 'grant') { %><div class="alert green">✅ Access granted.</div><% } %>
+<% if (query.msg === 'revoke') { %><div class="alert">Access revoked.</div><% } %>
+
+<div class="mini-stats">
+  <div><b><%= stats.students %></b><span>students</span></div>
+  <div><b><%= stats.codesActive %></b><span>active codes</span></div>
+  <div><b><%= stats.enrollments %></b><span>enrollments</span></div>
+  <div><b><%= stats.completed %></b><span>modules done</span></div>
+</div>
+
+<div class="admin-grid">
+<section class="card">
+  <h2>🎟️ Generate invite code</h2>
+  <p class="muted">Give this code to the candidate — they register with their own details.</p>
+  <form method="POST" action="/admin/code" class="form">
+    <label>Course<select name="course_id"><option value="ALL">ALL courses</option><% courses.forEach(c=>{ %><option value="<%= c.id %>"><%= c.title %></option><% }) %></select></label>
+    <label>Label (e.g. batch / name)<input name="label" placeholder="Jan batch — Priya"></label>
+    <div class="row2"><label>Max uses<input name="max_uses" type="number" value="1" min="1" max="200"></label>
+    <label>Expires in (days, blank = never)<input name="days" type="number" min="0" placeholder="30"></label></div>
+    <button class="btn" type="submit">Generate code →</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>🔑 Grant / revoke access</h2>
+  <form method="POST" action="/admin/grant" class="form rowform">
+    <label>Student<select name="user_id"><% users.filter(u=>u.role==='student').forEach(u=>{ %><option value="<%= u.id %>"><%= u.name %> · <%= u.email %></option><% }) %></select></label>
+    <label>Course<select name="course_id"><option value="ALL">ALL</option><% courses.forEach(c=>{ %><option value="<%= c.id %>"><%= c.title %></option><% }) %></select></label>
+    <button class="btn small" type="submit">Grant ✓</button>
+  </form>
+  <form method="POST" action="/admin/revoke" class="form rowform">
+    <label>Student<select name="user_id"><% users.filter(u=>u.role==='student').forEach(u=>{ %><option value="<%= u.id %>"><%= u.name %> · <%= u.email %></option><% }) %></select></label>
+    <label>Course<select name="course_id"><% courses.forEach(c=>{ %><option value="<%= c.id %>"><%= c.title %></option><% }) %></select></label>
+    <button class="btn small ghost" type="submit">Revoke</button>
+  </form>
+</section>
+</div>
+
+<h2>🎟️ Invite codes</h2>
+<div class="tablewrap"><table>
+<tr><th>Code</th><th>Course</th><th>Label</th><th>Uses</th><th>Expires</th><th>Active</th><th></th></tr>
+<% codes.forEach(c=>{ %><tr>
+<td><code><%= c.code %></code></td><td><%= c.course_id %></td><td><%= c.label %></td>
+<td><%= c.used_count %>/<%= c.max_uses %></td><td><%= c.expires_at ? c.expires_at.slice(0,10) : '—' %></td>
+<td><%= c.active ? '✅' : '⛔' %></td>
+<td><form method="POST" action="/admin/code-toggle"><input type="hidden" name="id" value="<%= c.id %>"><button class="btn small ghost"><%= c.active ? 'Disable' : 'Enable' %></button></form></td>
+</tr><% }) %>
+</table></div>
+
+<h2>👥 Students & progress</h2>
+<% overview.forEach(({user, per}) => { %>
+<details class="scen"><summary><b><%= user.name %></b> · <%= user.email %> · <%= user.phone %> — <%= per.length %> course(s)</summary>
+  <% if (!per.length) { %><p class="muted">No enrollments. Grant access above.</p><% } %>
+  <% per.forEach(p=>{ %>
+    <p><b><%= p.cid %></b>: <%= p.completed %>/<%= p.total %> (<%= p.pct %>%)</p>
+    <div class="pbar"><div style="width:<%= p.pct %>%"></div></div>
+    <div class="tablewrap"><table><tr><th>#</th><th>Lesson</th><th>Quiz best</th><th>Practical</th><th>Done</th></tr>
+    <% p.rows.forEach(r=>{ %><tr><td><%= r.module_idx+1 %></td><td><%= r.lessons_done ? '✓' : '—' %></td><td><%= r.quiz_best != null ? r.quiz_best+'/'+r.quiz_total+(r.quiz_passed?' ✅':'') : '—' %></td><td><%= r.practical_done ? ('✓ '+(r.practical_notes||'').slice(0,60)) : '—' %></td><td><%= r.completed ? '✅' : '—' %></td></tr><% }) %>
+    </table></div>
+  <% }) %>
+</details>
+<% }) %>
+
+<h2>📝 All enrollments</h2>
+<div class="tablewrap"><table><tr><th>Student</th><th>Course</th><th>Granted</th></tr>
+<% enrollments.forEach(e=>{ %><tr><td><%= e.uname %> (<%= e.uemail %>)</td><td><%= e.course_id %></td><td><%= e.granted_at %></td></tr><% }) %>
+</table></div>
+
+<%- include('footer') %>

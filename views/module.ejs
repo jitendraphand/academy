@@ -1,0 +1,86 @@
+<%- include('header', { title: mod.title }) %>
+<a href="/course/<%= course.id %>">← <%= course.title %></a>
+<div class="mod-head" style="--c:<%= course.color %>">
+  <div><span class="pill"><%= mod.weekLabel %> · <%= mod.hours %></span>
+  <h1><%= idx+1 %>. <%= mod.title %></h1>
+  <p class="muted">Module <%= idx+1 %> of <%= total %></p></div>
+  <div class="mod-nav">
+    <% if (idx > 0) { %><a class="btn small ghost" href="/course/<%= course.id %>/module/<%= idx-1 %>">← Prev</a><% } %>
+    <% if (idx < total-1) { %><a class="btn small ghost" href="/course/<%= course.id %>/module/<%= idx+1 %>">Next →</a><% } %>
+  </div>
+</div>
+
+<% if (prow && prow.completed) { %><div class="alert green">✅ Module complete — revision mode. Next module unlocked!</div><% } %>
+
+<div class="tabs">
+  <button class="tab active" data-t="learn">📖 Learn</button>
+  <button class="tab" data-t="lab">🧊 3D Lab</button>
+  <button class="tab" data-t="act">🎮 Activity</button>
+  <button class="tab" data-t="quiz">📝 Test <span id="quizBadge"><% if (prow && prow.quiz_passed) { %>✅<% } %></span></button>
+  <button class="tab" data-t="prac">💈 Practical</button>
+</div>
+
+<section class="tabpage active" id="t-learn">
+  <div class="card"><h2>🎯 Objectives (<%= mod.hours %>)</h2><ul class="ticks"><% mod.objectives.forEach(o=>{ %><li>✓ <%= o %></li><% }) %></ul></div>
+  <div class="card prose"><h2>📖 Theory</h2><%- mod.theory %></div>
+  <div class="card"><h2>👁️ Visual demo steps</h2><div class="vsteps"><% mod.visualSteps.forEach(s=>{ %><div class="vstep"><span><%= s.e %></span><p><%= s.t %></p></div><% }) %></div></div>
+  <button class="btn big" id="lessonBtn"><%= prow && prow.lessons_done ? '✓ Theory marked complete' : 'Mark theory complete →' %></button>
+</section>
+
+<section class="tabpage" id="t-lab">
+  <div class="card"><h2>🧊 <%= mod.threeD.title %></h2><p class="muted"><%= mod.threeD.description %></p>
+    <div id="threeWrap" data-theme="<%= mod.threeD.type %>" class="three-wrap"><p class="muted">🖱️ Drag to rotate · pinch/scroll to zoom · works on phone & desktop</p><div id="threeBox"></div></div>
+    <div class="row"><button class="btn small" id="spinBtn">⏸ Pause spin</button><button class="btn small ghost" id="layerBtn">� layers</button></div>
+  </div>
+</section>
+
+<section class="tabpage" id="t-act">
+  <div class="card">
+    <h2>🎮 <%= mod.activity.title %></h2><p class="muted"><%= mod.activity.instructions %></p>
+    <% if (mod.activity.type === 'checklist') { %>
+      <div id="actBox"><% mod.activity.items.forEach((it,i)=>{ %><label class="check"><input type="checkbox" data-i="<%= i %>"> <%= it %></label><% }) %></div>
+      <p><b id="actScore">0/<%= mod.activity.items.length %></b></p>
+    <% } else if (mod.activity.type === 'cards') { %>
+      <div class="flipgrid" id="actBox"><% mod.activity.items.forEach(p=>{ %><div class="flip" data-a="<%= p[0] %>" data-b="<%= p[1] %>"><div class="fin">❓<br><b><%= p[0] %></b><br><small>tap to flip</small></div></div><% }) %></div>
+    <% } else if (mod.activity.type === 'mixer') { %>
+      <div id="actBox"><p><b>Left = prompt · Right = tap correct match</b></p>
+      <% mod.activity.items.forEach(p=>{ %><div class="mixrow"><span><%= p[0] %></span><button class="btn small ghost mixbtn" data-ok="<%= p[1] %>">?</button></div><% }) %>
+      <p class="muted">Tap “?” to reveal the match, then say it aloud before revealing the next.</p></div>
+    <% } else { %>
+      <div id="actBox"><% mod.activity.items.forEach(p=>{ %><details class="scen"><summary><b><%= p[0] %></b> — tap for answer</summary><p>✅ <%= p[1] %></p></details><% }) %></div>
+    <% } %>
+  </div>
+</section>
+
+<section class="tabpage" id="t-quiz">
+  <div class="card">
+    <h2>📝 Check your understanding (pass ≥ 60%)</h2>
+    <% if (prow && prow.quiz_best != null) { %><p>Best so far: <b><%= prow.quiz_best %>/<%= prow.quiz_total %></b> <%= prow.quiz_passed ? '✅ passed' : '— keep trying' %></p><% } %>
+    <div id="quizBox" data-course="<%= course.id %>" data-idx="<%= idx %>">
+      <% mod.quiz.forEach((q, qi)=>{ %>
+        <div class="q" data-answer="<%= q.answer %>">
+          <p><b>Q<%= qi+1 %>. <%= q.q %></b></p>
+          <% q.options.forEach((op, oi)=>{ %><label class="opt"><input type="radio" name="q<%= qi %>" value="<%= oi %>"> <%= op %></label><% }) %>
+          <p class="explain hidden">💡 <%= q.explain %></p>
+        </div>
+      <% }) %>
+      <button class="btn big" id="quizBtn">Submit test →</button>
+      <p id="quizRes"></p>
+    </div>
+  </div>
+</section>
+
+<section class="tabpage" id="t-prac">
+  <div class="card practical">
+    <h2>💈 In-salon practical: <%= mod.practical.title %></h2>
+    <p><b>Task:</b> <%= mod.practical.task %></p>
+    <p><b>Outcome:</b> <%= mod.practical.outcome %></p>
+    <h3>Mentor checklist</h3>
+    <ul class="ticks"><% mod.practical.checklist.forEach(c=>{ %><li>☐ <%= c %></li><% }) %></ul>
+    <label>Your notes / evidence (what you did, photo refs, mentor sign):<textarea id="pracNotes" rows="4" placeholder="e.g. Did 2 basin services on… mentor: Rina ✓ …"><%= prow ? (prow.practical_notes || '') : '' %></textarea></label>
+    <button class="btn big" id="pracBtn"><%= prow && prow.practical_done ? '✓ Practical submitted — update' : 'Submit practical →' %></button>
+    <p id="pracRes" class="muted"></p>
+  </div>
+</section>
+
+<%- include('footer') %>

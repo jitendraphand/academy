@@ -1,0 +1,19 @@
+<%- include('header', { title: 'Register' }) %>
+<section class="auth">
+  <h1>Register with your invite code</h1>
+  <p class="muted">Your admin / trainer gave you a code like <code>SALON-XXXX-XXXX</code>. It unlocks your course(s).</p>
+  <% if (error) { %><div class="alert"><%= error %></div><% } %>
+  <form method="POST" action="/register" class="card form">
+    <label>Full name<input name="name" required value="<%= prefill.name || '' %>" placeholder="Asha Sharma"></label>
+    <label>Email<input name="email" type="email" required value="<%= prefill.email || '' %>" placeholder="you@example.com"></label>
+    <label>Phone<input name="phone" value="<%= prefill.phone || '' %>" placeholder="+91 …"></label>
+    <label>Password<input name="password" type="password" required minlength="6" placeholder="min 6 chars"></label>
+    <label class="hl">Invite code<input name="code" required value="<%= prefill.code || '' %>" placeholder="SALON-XXXX-XXXX" style="text-transform:uppercase"></label>
+    <button class="btn big" type="submit">Create account & unlock →</button>
+    <p class="muted">Already registered? <a href="/login">Login</a></p>
+  </form>
+  <div class="card"><h3>Available courses</h3><p class="muted">Your code decides which of these unlock:</p>
+    <ul><% courses.forEach(c=>{ %><li><%= c.icon %> <b><%= c.title %></b> — <%= c.duration %></li><% }) %></ul>
+  </div>
+</section>
+<%- include('footer') %>

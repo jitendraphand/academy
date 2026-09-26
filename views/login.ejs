@@ -1,0 +1,14 @@
+<%- include('header', { title: 'Login' }) %>
+<section class="auth">
+  <h1>Welcome back</h1>
+  <p class="muted">Students log in to learn · Admins to manage codes & access</p>
+  <% if (error) { %><div class="alert"><%= error %></div><% } %>
+  <form method="POST" action="/login" class="card form">
+    <label>Email<input name="email" type="email" required placeholder="you@example.com"></label>
+    <label>Password<input name="password" type="password" required placeholder="••••••••"></label>
+    <button class="btn big" type="submit">Login →</button>
+    <p class="muted">No account? <a href="/register">Register with an invite code</a></p>
+    <p class="muted small">Default admin: <code>admin@salon.academy</code> / <code>admin123</code></p>
+  </form>
+</section>
+<%- include('footer') %>

@@ -1,0 +1,50 @@
+<%- include('header', { title: 'Professional salon courses' }) %>
+
+<section class="hero">
+  <div class="hero-text">
+    <div class="pill">3 courses · 36 weeks · salon-based practicals</div>
+    <h1>Become salon-ready in <span class="grad">Hair, Skin & Chemical</span></h1>
+    <p>High-standard, highly visual training with 3D labs, interactive activities, quizzes and real in-salon practicals. Learn 2–3 hours a week for 3 months per course — on any phone, tablet or desktop.</p>
+    <div class="cta-row">
+      <a class="btn big" href="/register">🎟️ Register with invite code</a>
+      <a class="btn big ghost" href="/login">Login</a>
+    </div>
+    <div class="mini-stats">
+      <div><b><%= stats.modules %></b><span>modules</span></div>
+      <div><b><%= stats.quizzes %></b><span>quiz questions</span></div>
+      <div><b>3D</b><span>visual labs</span></div>
+      <div><b>36</b><span>salon practicals</span></div>
+    </div>
+  </div>
+  <div class="hero-art">
+    <div class="orb o1">💇</div><div class="orb o2">✨</div><div class="orb o3">⚗️</div>
+    <div class="hero-card">📱💻 Device agnostic<br><small>mobile-first · offline-friendly text · touch 3D</small></div>
+  </div>
+</section>
+
+<section class="grid3">
+  <% courses.forEach(c => { %>
+  <article class="course-card" style="--c:<%= c.color %>">
+    <div class="cc-top"><span class="cc-icon"><%= c.icon %></span><span class="cc-dur"><%= c.duration %></span></div>
+    <h2><%= c.title %></h2>
+    <p class="muted"><%= c.tagline %></p>
+    <p><%= c.description.slice(0, 220) %>…</p>
+    <ul class="ticks">
+      <% c.outcomes.slice(0,3).forEach(o => { %><li>✓ <%= o %></li><% }) %>
+    </ul>
+    <div class="cc-foot"><span><%= c.modules.length %> modules · quiz + practical each</span><a class="btn small" href="/register">Get access →</a></div>
+  </article>
+  <% }) %>
+</section>
+
+<section class="how">
+  <h2>How it works</h2>
+  <div class="steps">
+    <div><b>1</b><h3>Admin generates code</h3><p>Admin creates a single- or multi-use invite code for Hair, Skin, Chemical or ALL.</p></div>
+    <div><b>2</b><h3>Student registers</h3><p>Candidate registers with name, email, phone, password + code. Access is granted instantly.</p></div>
+    <div><b>3</b><h3>Learn + practise</h3><p>Weekly module: theory → 3D lab → interactive activity → quiz (60% to pass) → in-salon practical.</p></div>
+    <div><b>4</b><h3>Admin tracks</h3><p>Progress %, quiz bests and practical notes visible per student. Grant/revoke anytime.</p></div>
+  </div>
+</section>
+
+<%- include('footer') %>
