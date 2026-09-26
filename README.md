@@ -38,6 +38,14 @@ ADMIN_EMAIL=boss@salon.com ADMIN_PASSWORD=Strong123 docker compose up --build
 - **Admin → “Demo access” → Create Demo access**: generates a `DEMO-XXXX-XXXX` code for ALL courses. Anyone registering with it gets every module unlocked (no sequential lock) and a DEMO badge.
 - Any student can also be switched to/from demo individually (Students list → turn demo mode on/off).
 
+## 🖼️ Blender reference plates
+Each 3D lab shows a studio-rendered tool plate above the interactive demo.
+Regenerate with Blender 5.x (headless, EEVEE):
+```bash
+blender -b --python blender/make_plates.py
+# → public/img/plates/*.png (9 shared plates mapped to all 36 demos)
+```
+
 ## 🗂️ Structure
 ```
 server.js            # routes, auth, admin, progress APIs

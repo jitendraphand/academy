@@ -149,6 +149,10 @@ tr:last-child td{border-bottom:0}
 .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .rowform{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin:8px 0}
 .footer{border-top:1px solid var(--line);padding:20px;text-align:center;color:var(--mut);margin-top:34px;background:#fff}
+/* blender reference plate */
+.plate{margin:0 0 10px;background:var(--surface2);border:1px solid var(--line2);border-radius:14px;padding:10px}
+.plate img{width:100%;height:auto;border-radius:10px;display:block}
+.plate figcaption{font-size:13px;margin-top:6px}
 /* guided 3D procedure steps */
 .scene-panel{background:var(--surface2);border:1px solid var(--line2);border-radius:14px;padding:14px 16px;margin-top:10px}
 .scene-panel h3{margin:.5em 0 .3em}

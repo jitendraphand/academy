@@ -30,6 +30,7 @@
 
 <section class="tabpage" id="t-lab">
   <div class="card"><h2>🧊 <%= mod.threeD.title %></h2><p class="muted"><%= mod.threeD.description %></p>
+    <figure class="plate" id="plateFig"><img id="plateImg" alt="Blender-rendered tool reference plate"><figcaption id="plateCap" class="muted"></figcaption></figure>
     <div id="threeWrap" data-theme="<%= mod.threeD.type %>" data-course="<%= course.id %>" data-idx="<%= idx %>" class="three-wrap"><p class="muted">🖱️ Drag to rotate · pinch/scroll to zoom · works on phone & desktop</p><div id="threeBox"></div></div>
     <div class="scene-panel">
       <div class="row"><span class="pill" id="sceneKicker">🔧 Tool demo</span><span id="stepDots" class="step-dots"></span></div>

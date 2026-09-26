@@ -105,6 +105,15 @@
     SCENE = SCENES[k];
     const kick = document.getElementById('sceneKicker');
     if (kick) kick.textContent = '🔧 ' + SCENE.t;
+    const plate = PLATE_BY_BUILDER[SCENE.b];
+    const fig = document.getElementById('plateFig');
+    const img = document.getElementById('plateImg');
+    const cap = document.getElementById('plateCap');
+    if (plate && fig && img) {
+      img.onerror = () => { fig.style.display = 'none'; };
+      img.src = '/img/plates/' + plate + '.png';
+      if (cap) cap.textContent = PLATE_CAP[plate] || '';
+    } else if (fig) fig.style.display = 'none';
     showStep(0);
   }
   function showStep(i) {
@@ -1264,6 +1273,30 @@
       ['Photograph proof', 'Same light, same angles, staged shots with formula cards — the portfolio that sells the next corrective.'],
       ['Price the stages', 'Tests plus stages plus maintenance, never a flat guess. Pass mark: theory ≥70% and an observed chemical service with aftercare pitch.']
     ]}
+  };
+
+  // Blender-rendered reference plates (public/img/plates/*.png) per demo scene
+  const PLATE_BY_BUILDER = {
+    station: 'basin', strandLab: 'chembench', scalpScope: 'facial', basinService: 'basin',
+    shearSection: 'shears', elevationMap: 'shears', heatStyle: 'heat', updoLab: 'desk',
+    colorWheel: 'colour', retouchMap: 'colour', foilWork: 'colour', assessKit: 'desk',
+    skinRoom: 'facial', skinLayers: 'facial', faceAnalysis: 'facial', exfolBar: 'facial',
+    euroSteps: 'facial', massageFace: 'facial', lesionLib: 'facial', browWax: 'facial',
+    chemLab: 'chembench', deviceSuite: 'devices', protocolArc: 'devices', deskLoop: 'desk',
+    phBench: 'chembench', consultKit: 'chembench', bondLab: 'rods', rodPatterns: 'rods',
+    relaxMap: 'chembench', volBench: 'colour', liftTunnel: 'colour', dimensionLab: 'colour',
+    tonerBar: 'colour', safetyDrill: 'chembench', aftercareKit: 'basin', fixBench: 'desk'
+  };
+  const PLATE_CAP = {
+    shears: 'Reference plate (Blender): cutting shears + sectioning comb',
+    heat: 'Reference plate (Blender): dryer + round brush + infrared iron',
+    colour: 'Reference plate (Blender): tint bowl + brush + foils + developer + scale',
+    basin: 'Reference plate (Blender): basin + backwash bottles + towels',
+    facial: 'Reference plate (Blender): steamer + mask bowl + headband',
+    devices: 'Reference plate (Blender): high-frequency + LED + microcurrent',
+    chembench: 'Reference plate (Blender): beaker + pH strips + gloves + ventilation',
+    rods: 'Reference plate (Blender): perm rods + end papers + tail comb',
+    desk: 'Reference plate (Blender): ring light + camera + retail shelf'
   };
 
   // ---------- engine ----------
