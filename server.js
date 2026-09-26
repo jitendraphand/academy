@@ -24,7 +24,7 @@ app.use(session({
 app.use((req, res, next) => {
   res.locals.user = null;
   if (req.session.userId) {
-    const u = db.prepare('SELECT id, name, email, phone, role, created_at FROM users WHERE id = ?').get(req.session.userId);
+    const u = db.prepare('SELECT id, name, email, phone, role, is_demo, created_at FROM users WHERE id = ?').get(req.session.userId);
     if (u) { res.locals.user = u; req.user = u; }
     else delete req.session.userId;
   }
@@ -52,14 +52,18 @@ function progressFor(userId, courseId) {
 }
 function isUnlocked(userId, courseId, idx) {
   if (idx === 0) return true;
+  try {
+    const u = db.prepare('SELECT is_demo FROM users WHERE id = ?').get(userId);
+    if (u && u.is_demo) return true; // demo users: every module open
+  } catch (e) { /* pre-migration DB: fall through to sequential */ }
   const prev = db.prepare('SELECT completed FROM progress WHERE user_id = ? AND course_id = ? AND module_idx = ?').get(userId, courseId, idx - 1);
   return !!(prev && prev.completed);
 }
-function genCode() {
+function genCode(prefix) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let s = '';
   for (let i = 0; i < 8; i++) s += chars[Math.floor(Math.random() * chars.length)];
-  return 'SALON-' + s.slice(0, 4) + '-' + s.slice(4);
+  return (prefix || 'SALON') + '-' + s.slice(0, 4) + '-' + s.slice(4);
 }
 
 // ---------- Public ----------
@@ -108,8 +112,8 @@ app.post('/register', (req, res) => {
   if (inv.used_count >= inv.max_uses) return res.render('register', { error: 'This invite code has reached its usage limit.', prefill: req.body, courses });
 
   const hash = bcrypt.hashSync(password, 10);
-  const info = db.prepare('INSERT INTO users (name, email, phone, password_hash, role) VALUES (?,?,?,?,?)')
-    .run(name.trim(), cleanEmail, (phone || '').trim(), hash, 'student');
+  const info = db.prepare('INSERT INTO users (name, email, phone, password_hash, role, is_demo) VALUES (?,?,?,?,?,?)')
+    .run(name.trim(), cleanEmail, (phone || '').trim(), hash, 'student', inv.is_demo ? 1 : 0);
   const userId = Number(info.lastInsertRowid);
 
   const targetCourses = inv.course_id === 'ALL' ? courses.map(c => c.id) : [inv.course_id];
@@ -254,6 +258,22 @@ app.post('/admin/code-toggle', requireAdmin, (req, res) => {
   const c = db.prepare('SELECT * FROM invite_codes WHERE id=?').get(id);
   if (c) db.prepare('UPDATE invite_codes SET active=? WHERE id=?').run(c.active ? 0 : 1, id);
   res.redirect('/admin');
+});
+
+// One-click demo access: code for ALL courses that unlocks every module
+app.post('/admin/demo-code', requireAdmin, (req, res) => {
+  let code = genCode('DEMO');
+  while (db.prepare('SELECT id FROM invite_codes WHERE code=?').get(code)) code = genCode('DEMO');
+  db.prepare('INSERT INTO invite_codes (code, course_id, label, max_uses, expires_at, created_by, is_demo) VALUES (?,?,?,?,?,?,1)')
+    .run(code, 'ALL', (req.body.label || 'Demo access — all courses, all modules open').slice(0, 80), Math.max(1, parseInt(req.body.max_uses, 10) || 50), null, req.user.id);
+  res.redirect('/admin?msg=demo');
+});
+
+// Toggle demo (all-modules-open) for any student
+app.post('/admin/demo-toggle', requireAdmin, (req, res) => {
+  const u = db.prepare('SELECT * FROM users WHERE id=?').get(req.body.user_id);
+  if (u && u.role === 'student') db.prepare('UPDATE users SET is_demo=? WHERE id=?').run(u.is_demo ? 0 : 1, u.id);
+  res.redirect('/admin?msg=demo-user');
 });
 
 app.post('/admin/grant', requireAdmin, (req, res) => {

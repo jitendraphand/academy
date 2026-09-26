@@ -82,4 +82,13 @@ function ensureAdmin() {
 }
 ensureAdmin();
 
+// Lightweight migrations for existing DBs (ignore "duplicate column" errors)
+function migrate(sql) {
+  try { db.exec(sql); } catch (e) {
+    if (!/duplicate column/i.test(e.message || '')) throw e;
+  }
+}
+migrate(`ALTER TABLE users ADD COLUMN is_demo INTEGER NOT NULL DEFAULT 0;`);
+migrate(`ALTER TABLE invite_codes ADD COLUMN is_demo INTEGER NOT NULL DEFAULT 0;`);
+
 module.exports = db;

@@ -1,5 +1,6 @@
 <%- include('header', { title: course.title }) %>
 <a href="/dashboard">← My Learning</a>
+<% if (user && user.is_demo) { %><div class="demo-banner">🎪 <b>Demo mode</b> — all 12 modules are open. Jump anywhere, no need to complete previous weeks.</div><% } %>
 <div class="course-head" style="--c:<%= course.color %>">
   <div><span class="cc-icon big"><%= course.icon %></span></div>
   <div><h1><%= course.title %></h1><p><%= course.tagline %></p><p class="muted"><%= course.duration %> · <%= course.level %></p>

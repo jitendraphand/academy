@@ -3,6 +3,8 @@
 <% if (query.msg === 'code') { %><div class="alert green">✅ Invite code generated — share it with the candidate.</div><% } %>
 <% if (query.msg === 'grant') { %><div class="alert green">✅ Access granted.</div><% } %>
 <% if (query.msg === 'revoke') { %><div class="alert">Access revoked.</div><% } %>
+<% if (query.msg === 'demo') { %><div class="alert green">🎪 Demo code created — all 3 courses, every module open. Share it freely.</div><% } %>
+<% if (query.msg === 'demo-user') { %><div class="alert green">🎪 Demo mode updated for that student.</div><% } %>
 
 <div class="mini-stats">
   <div><b><%= stats.students %></b><span>students</span></div>
@@ -24,6 +26,21 @@
   </form>
 </section>
 
+<section class="card demo-card">
+  <h2>🎪 Demo access — all courses, all modules open</h2>
+  <p class="muted">One click creates a <code>DEMO-XXXX-XXXX</code> code for <b>ALL 3 courses</b>. Anyone registering with it skips sequential locking — every module is directly accessible. Ideal for walkthroughs & trials.</p>
+  <form method="POST" action="/admin/demo-code" class="form">
+    <div class="row2"><label>Label<input name="label" placeholder="Demo day — front desk"></label>
+    <label>Max uses<input name="max_uses" type="number" value="50" min="1" max="500"></label></div>
+    <button class="btn big" type="submit">🎪 Create Demo access →</button>
+  </form>
+  <% const demos = codes.filter(c => c.is_demo); %>
+  <% if (demos.length) { %><h3>Active demo codes</h3>
+  <div class="tablewrap"><table><tr><th>Code</th><th>Label</th><th>Uses</th><th>Active</th></tr>
+  <% demos.forEach(c=>{ %><tr><td><code><%= c.code %></code></td><td><%= c.label %></td><td><%= c.used_count %>/<%= c.max_uses %></td><td><%= c.active ? '✅' : '⛔' %></td></tr><% }) %>
+  </table></div><% } %>
+</section>
+
 <section class="card">
   <h2>🔑 Grant / revoke access</h2>
   <form method="POST" action="/admin/grant" class="form rowform">
@@ -43,7 +60,7 @@
 <div class="tablewrap"><table>
 <tr><th>Code</th><th>Course</th><th>Label</th><th>Uses</th><th>Expires</th><th>Active</th><th></th></tr>
 <% codes.forEach(c=>{ %><tr>
-<td><code><%= c.code %></code></td><td><%= c.course_id %></td><td><%= c.label %></td>
+<td><code><%= c.code %></code><% if (c.is_demo) { %> <span class="demo-badge">DEMO</span><% } %></td><td><%= c.course_id %></td><td><%= c.label %></td>
 <td><%= c.used_count %>/<%= c.max_uses %></td><td><%= c.expires_at ? c.expires_at.slice(0,10) : '—' %></td>
 <td><%= c.active ? '✅' : '⛔' %></td>
 <td><form method="POST" action="/admin/code-toggle"><input type="hidden" name="id" value="<%= c.id %>"><button class="btn small ghost"><%= c.active ? 'Disable' : 'Enable' %></button></form></td>
@@ -52,7 +69,8 @@
 
 <h2>👥 Students & progress</h2>
 <% overview.forEach(({user, per}) => { %>
-<details class="scen"><summary><b><%= user.name %></b> · <%= user.email %> · <%= user.phone %> — <%= per.length %> course(s)</summary>
+<details class="scen"><summary><b><%= user.name %></b> · <%= user.email %> · <%= user.phone %> — <%= per.length %> course(s)<% if (user.is_demo) { %> <span class="demo-badge">DEMO</span><% } %></summary>
+  <form method="POST" action="/admin/demo-toggle" class="rowform"><input type="hidden" name="user_id" value="<%= user.id %>"><button class="btn small ghost" type="submit"><%= user.is_demo ? '🎪 Demo ON — turn off' : 'Turn demo mode on' %></button><span class="muted small">Demo = all modules open, no sequential lock.</span></form>
   <% if (!per.length) { %><p class="muted">No enrollments. Grant access above.</p><% } %>
   <% per.forEach(p=>{ %>
     <p><b><%= p.cid %></b>: <%= p.completed %>/<%= p.total %> (<%= p.pct %>%)</p>

@@ -1,5 +1,6 @@
 <%- include('header', { title: mod.title }) %>
 <a href="/course/<%= course.id %>">← <%= course.title %></a>
+<% if (user && user.is_demo) { %><div class="demo-banner">🎪 <b>Demo mode</b> — every module is unlocked for you.</div><% } %>
 <div class="mod-head" style="--c:<%= course.color %>">
   <div><span class="pill"><%= mod.weekLabel %> · <%= mod.hours %></span>
   <h1><%= idx+1 %>. <%= mod.title %></h1>
@@ -30,7 +31,7 @@
 <section class="tabpage" id="t-lab">
   <div class="card"><h2>🧊 <%= mod.threeD.title %></h2><p class="muted"><%= mod.threeD.description %></p>
     <div id="threeWrap" data-theme="<%= mod.threeD.type %>" class="three-wrap"><p class="muted">🖱️ Drag to rotate · pinch/scroll to zoom · works on phone & desktop</p><div id="threeBox"></div></div>
-    <div class="row"><button class="btn small" id="spinBtn">⏸ Pause spin</button><button class="btn small ghost" id="layerBtn">� layers</button></div>
+    <div class="row"><button class="btn small" id="spinBtn">⏸ Pause spin</button><button class="btn small ghost" id="layerBtn">🔍 layers</button></div>
   </div>
 </section>
 

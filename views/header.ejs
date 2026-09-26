@@ -12,7 +12,7 @@
   <a class="brand" href="/">💈 Salon Academy</a>
   <nav>
     <% if (user) { %>
-      <span class="hello">Hi, <%= user.name.split(' ')[0] %> · <%= user.role %></span>
+      <span class="hello">Hi, <%= user.name.split(' ')[0] %> · <%= user.role %><% if (user.is_demo) { %> <span class="demo-badge">DEMO</span><% } %></span>
       <% if (user.role === 'admin') { %><a class="btn small" href="/admin">Admin</a><% } else { %><a class="btn small" href="/dashboard">My Learning</a><% } %>
       <a class="btn small ghost" href="/logout">Logout</a>
     <% } else { %>

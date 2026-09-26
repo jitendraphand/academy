@@ -34,6 +34,10 @@ ADMIN_EMAIL=boss@salon.com ADMIN_PASSWORD=Strong123 docker compose up --build
 3. Dashboard → open Hair/Skin/Chemical → Week 1 → Learn → 3D Lab → Activity → Test (≥60%) → Mark theory → Practical notes → Week 2 unlocks
 4. Back as admin → expand student → see % + quiz + practicals; grant/revoke anytime
 
+## 🎪 Demo mode
+- **Admin → “Demo access” → Create Demo access**: generates a `DEMO-XXXX-XXXX` code for ALL courses. Anyone registering with it gets every module unlocked (no sequential lock) and a DEMO badge.
+- Any student can also be switched to/from demo individually (Students list → turn demo mode on/off).
+
 ## 🗂️ Structure
 ```
 server.js            # routes, auth, admin, progress APIs
