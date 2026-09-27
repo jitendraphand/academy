@@ -24,6 +24,8 @@
 <section class="tabpage active" id="t-learn">
   <div class="card"><h2>🎯 Objectives (<%= mod.hours %>)</h2><ul class="ticks"><% mod.objectives.forEach(o=>{ %><li>✓ <%= o %></li><% }) %></ul></div>
   <div class="card prose"><h2>📖 Theory</h2><%- mod.theory %></div>
+  <% if (mod.deepTheory) { %><div class="card prose deep"><h2>🔬 Deep dive — professional standard</h2><%- mod.deepTheory %><%- mod.deepExtra || '' %></div><% } %>
+  <% if (mod.caseStudy) { %><div class="card case"><h2>🧾 Case study: <%= mod.caseStudy.title %></h2><p><%= mod.caseStudy.brief %></p><ol><% mod.caseStudy.tasks.forEach(t=>{ %><li><%= t %></li><% }) %></ol><p class="debrief"><b>Debrief:</b> <%= mod.caseStudy.debrief %></p></div><% } %>
   <div class="card"><h2>👁️ Visual demo steps</h2><div class="vsteps"><% mod.visualSteps.forEach(s=>{ %><div class="vstep"><span><%= s.e %></span><p><%= s.t %></p></div><% }) %></div></div>
   <button class="btn big" id="lessonBtn"><%= prow && prow.lessons_done ? '✓ Theory marked complete' : 'Mark theory complete →' %></button>
 </section>
@@ -61,10 +63,10 @@
 
 <section class="tabpage" id="t-quiz">
   <div class="card">
-    <h2>📝 Check your understanding (pass ≥ 60%)</h2>
+    <h2>📝 Check your understanding (pass ≥ <%= Math.round((mod.passMark || 0.6) * 100) %>%)</h2>
     <% if (prow && prow.quiz_best != null) { %><p>Best so far: <b><%= prow.quiz_best %>/<%= prow.quiz_total %></b> <%= prow.quiz_passed ? '✅ passed' : '— keep trying' %></p><% } %>
     <div id="quizBox" data-course="<%= course.id %>" data-idx="<%= idx %>">
-      <% mod.quiz.forEach((q, qi)=>{ %>
+      <% (typeof questions !== 'undefined' ? questions : mod.quiz).forEach((q, qi)=>{ %>
         <div class="q" data-answer="<%= q.answer %>">
           <p><b>Q<%= qi+1 %>. <%= q.q %></b></p>
           <% q.options.forEach((op, oi)=>{ %><label class="opt"><input type="radio" name="q<%= qi %>" value="<%= oi %>"> <%= op %></label><% }) %>
@@ -84,6 +86,14 @@
     <p><b>Outcome:</b> <%= mod.practical.outcome %></p>
     <h3>Mentor checklist</h3>
     <ul class="ticks"><% mod.practical.checklist.forEach(c=>{ %><li>☐ <%= c %></li><% }) %></ul>
+    <% if (mod.rubric) { %>
+    <h3>📊 Grading rubric — <%= mod.rubric.title %> (pass: mostly 3–4)</h3>
+    <div class="tablewrap"><table>
+      <tr><th>Criterion</th><th>1 — Not yet</th><th>2 — Developing</th><th>3 — Competent</th><th>4 — Professional</th></tr>
+      <% mod.rubric.criteria.forEach(r=>{ %><tr><td><b><%= r.name %></b></td><% r.levels.forEach(l=>{ %><td><%= l %></td><% }) %></tr><% }) %>
+    </table></div>
+    <p class="muted"><b>Evidence required:</b> <%= mod.rubric.evidence %></p>
+    <% } %>
     <label>Your notes / evidence (what you did, photo refs, mentor sign):<textarea id="pracNotes" rows="4" placeholder="e.g. Did 2 basin services on… mentor: Rina ✓ …"><%= prow ? (prow.practical_notes || '') : '' %></textarea></label>
     <button class="btn big" id="pracBtn"><%= prow && prow.practical_done ? '✓ Practical submitted — update' : 'Submit practical →' %></button>
     <p id="pracRes" class="muted"></p>

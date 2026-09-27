@@ -162,7 +162,8 @@ app.get('/course/:id/module/:idx', requireLogin, (req, res) => {
   if (req.user.role !== 'admin' && !isUnlocked(req.user.id, course.id, idx)) return res.status(403).send('Complete the previous module first. <a href="/course/' + course.id + '">Back</a>');
   const mod = course.modules[idx];
   let prow = req.user.role === 'admin' ? null : db.prepare('SELECT * FROM progress WHERE user_id=? AND course_id=? AND module_idx=?').get(req.user.id, course.id, idx);
-  res.render('module', { course, mod, idx, total: course.modules.length, prow });
+  const questions = mod.quiz.concat(mod.quizMore || []);
+  res.render('module', { course, mod, idx, total: course.modules.length, prow, questions });
 });
 
 // APIs (student)
@@ -184,10 +185,12 @@ app.post('/api/quiz', requireLogin, (req, res) => {
   if (!course) return res.json({ ok: false });
   const mod = course.modules[idx];
   if (!mod) return res.json({ ok: false });
+  const questions = mod.quiz.concat(mod.quizMore || []);
   let score = 0;
-  mod.quiz.forEach((q, i) => { if (answers && parseInt(answers[i], 10) === q.answer) score++; });
-  const total = mod.quiz.length;
-  const passed = score / total >= 0.6;
+  questions.forEach((q, i) => { if (answers && parseInt(answers[i], 10) === q.answer) score++; });
+  const total = questions.length;
+  const passMark = mod.passMark || 0.6;
+  const passed = score / total >= passMark;
   db.prepare(`INSERT INTO progress (user_id, course_id, module_idx, quiz_best, quiz_total, quiz_passed, updated_at)
     VALUES (?,?,?, ?,?, ?, datetime('now'))
     ON CONFLICT(user_id, course_id, module_idx) DO UPDATE SET
@@ -197,7 +200,7 @@ app.post('/api/quiz', requireLogin, (req, res) => {
       updated_at=datetime('now')`)
     .run(req.user.id, courseId, idx, score, total, passed ? 1 : 0);
   checkComplete(req.user.id, courseId, idx);
-  res.json({ ok: true, score, total, passed, explanations: mod.quiz.map(q => q.explain) });
+  res.json({ ok: true, score, total, passed, passMark, explanations: questions.map(q => q.explain) });
 });
 
 app.post('/api/practical', requireLogin, (req, res) => {
