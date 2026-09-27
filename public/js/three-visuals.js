@@ -22,7 +22,7 @@
         g.textAlign = 'center'; g.fillStyle = color || '#fff'; g.fillText(txt, 128, 42);
         const t = new THREE.CanvasTexture(c);
         const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthTest: false }));
-        sp.position.set(x, y, z); const k = s || 1; sp.scale.set(1.7 * k, 0.42 * k, 1);
+        sp.position.set(x, y, z); const k = s || 1; sp.scale.set(2.1 * k, 0.52 * k, 1);
         root.add(sp); return sp;
       },
       box(w, h, d, color, step, x, y, z) {
@@ -258,15 +258,15 @@
     },
 
     shearSection(R, H) {
-      // oversized shear anatomy
-      const b1 = H.box(1.7, 0.09, 0.16, 0xd7dae1, 0, -0.5, 0.9, 0.9);
-      const b2 = H.box(1.7, 0.09, 0.16, 0xc2c6d0, 0, -0.5, 0.9, 0.9);
+      // oversized shear anatomy (left station)
+      const b1 = H.box(1.7, 0.09, 0.16, 0xd7dae1, 0, -1.1, 0.9, 0.9);
+      const b2 = H.box(1.7, 0.09, 0.16, 0xc2c6d0, 0, -1.1, 0.9, 0.9);
       b1.rotation.z = 0.14; b2.rotation.z = -0.14;
-      H.sph(0.11, 0xb45309, 0, -0.5, 0.9, 0.9);
-      H.label('PIVOT screw', -0.5, 1.3, 0.9, '#fff', 0.75);
-      H.tor(0.17, 0.045, 0x8b5cf6, 1, -1.35, 0.62, 0.9, 0);
-      H.tor(0.17, 0.045, 0x8b5cf6, 1, -1.35, 1.18, 0.9, 0);
-      H.label('THUMB moves · ring still', -1.35, 1.65, 0.9, '#fff', 0.75);
+      H.sph(0.11, 0xb45309, 0, -1.1, 0.9, 0.9);
+      H.label('PIVOT screw', -1.1, 0.35, 0.9, '#fff', 0.75);
+      H.tor(0.17, 0.045, 0x8b5cf6, 1, -1.95, 0.62, 0.9, 0);
+      H.tor(0.17, 0.045, 0x8b5cf6, 1, -1.95, 1.18, 0.9, 0);
+      H.label('THUMB drives', -1.25, 1.78, 0.9, '#fff', 0.6);
       // sectioned head: 4 quarters + horseshoe
       const g = H.head(1.15, 0.1, -0.6, 0.95, 2);
       const cols = [0x8b5cf6, 0xec4899, 0x0f766e, 0xf59e0b];
@@ -284,28 +284,27 @@
     },
 
     elevationMap(R, H) {
-      H.head(0, 0, 0, 1, 0);
-      // 0° fall skirt
-      const skirt = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 1.0, 1.2, 20, 1, true),
+      H.head(0, 0.35, 0, 0.9, 0);
+      // 0° cape skirt below the shoulders
+      const skirt = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.62, 0.7, 20, 1, true),
         H.mat(0x8b5cf6, 0));
-      skirt.position.set(0, -0.9, 0); R.add(skirt);
-      H.label('0° ONE-LENGTH', -1.5, -0.9, 0, '#fff', 0.75);
-      // 45° wedge
-      const w45 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 1.1, 1.3, 12, 1, false, 0, 1.1),
-        H.mat(0xf59e0b, 1));
-      w45.position.set(1.7, -0.3, 0); w45.rotation.z = -0.6; R.add(w45);
-      H.label('45° GRADUATION', 1.7, 0.9, 0, '#fff', 0.75);
-      // 90° projection
-      const w90 = H.cyl(0.09, 0.5, 1.4, 0x0f766e, 2, -1.7, 0.1, 0);
+      skirt.position.set(0, -0.75, 0); R.add(skirt);
+      H.label('0° ONE-LENGTH', -1.45, -0.75, 0, '#fff', 0.9);
+      // 45° stacked weight (angled block)
+      const w45 = H.box(0.5, 0.9, 0.14, 0xf59e0b, 1, 1.4, -0.35, 0);
+      w45.rotation.z = -0.6; R.add(w45);
+      H.label('45° GRADUATION', 1.5, 0.4, 0, '#fff', 0.9);
+      // 90° projection bar to the left
+      const w90 = H.cyl(0.14, 0.14, 0.9, 0x0f766e, 2, -1.4, -0.1, 0);
       w90.rotation.z = Math.PI / 2;
-      H.label('90° LAYERS', -1.7, 1.0, 0, '#fff', 0.75);
+      H.label('90° LAYERS', -1.45, 0.5, 0, '#fff', 0.9);
       // face-shape ovals
       const shapes = [['OVAL any', 0x2dd4bf], ['ROUND height', 0xec4899], ['SQUARE soften', 0xf59e0b]];
       shapes.forEach((s, i) => {
-        const o = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 12), H.mat(s[1], 3));
+        const o = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 12), H.mat(s[1], 3));
         o.scale.set(i === 1 ? 1.15 : 0.85, i === 2 ? 0.9 : 1.15, 0.5);
-        o.position.set(-0.9 + i * 0.9, -1.9, 0.4); R.add(o);
-        H.label(s[0], -0.9 + i * 0.9, -2.35, 0.4, '#fff', 0.55);
+        o.position.set(-1.1 + i * 1.1, -1.6, 0.4); R.add(o);
+        H.label(s[0], -1.1 + i * 1.1, -1.98, 0.4, '#fff', 0.6);
       });
     },
     heatStyle(R, H) {
@@ -546,12 +545,12 @@
       layers.forEach((L, i) => {
         const m = H.cyl(1.35 - i * 0.06, 1.35 - i * 0.06, 0.5, L[1], i, 0, L[2], 0, 30);
         m.material.transparent = true; m.material.opacity = 0.9;
-        H.label(L[0], 0, L[2] + 0.45, 0, '#fff', 0.72);
+        H.label(L[0] + (i === 0 ? ' · pH 4.5-5.5' : ''), 0.35, L[2] + 0.45, 0, '#fff', 0.72);
       });
       // barrier film
       const film = H.box(2.2, 0.03, 1.4, 0x7dd3fc, 0, 0, 1.68, 0);
       film.material.transparent = true; film.material.opacity = 0.6;
-      H.label('ACID MANTLE pH 4.5-5.5', 0, 1.95, 0, '#fff', 0.7);
+      H.label('ACID MANTLE', -1.55, 1.68, 0, '#fff', 0.62);
       // collagen coils in dermis
       for (let i = 0; i < 5; i++) {
         const pts = [];
@@ -562,7 +561,7 @@
       // UV arrow + SPF shield
       const uv = H.arrow(0xf59e0b, 3, 0.9); uv.position.set(1.7, 1.2, 0); uv.rotation.x = Math.PI;
       H.box(0.7, 0.5, 0.05, 0xfffbeb, 3, 1.7, 0.2, 0);
-      H.label('UV breaks it · SPF 2 fingers', 1.7, -0.35, 0, '#fff', 0.7);
+      H.label('UV breaks it · SPF 2 fingers', 1.25, -0.55, 0, '#fff', 0.62);
     },
 
     exfolBar(R, H) {
@@ -691,35 +690,35 @@
     },
 
     deviceSuite(R, H) {
-      // HF unit + electrode with violet glow
-      H.box(0.7, 0.5, 0.5, 0xe7e5e4, 0, -1.2, -0.6, 0);
-      H.cyl(0.04, 0.04, 0.7, 0x9aa0ae, 0, -1.2, 0.0, 0);
-      H.sph(0.14, 0xc4b5fd, 0, -1.2, 0.45, 0);
-      const gl = new THREE.PointLight(0x8b5cf6, 1.6, 4); gl.position.set(-1.2, 0.45, 0); R.add(gl);
-      H.tor(0.3, 0.03, 0x8b5cf6, 0, -1.2, 0.45, 0, 0);
-      H.label('HF 5mm gap keep moving', -1.2, 1.05, 0, '#fff', 0.72);
-      // LED mask red/blue
-      const mask = H.sph(0.55, 0x1f2937, 1, 0.3, 0.1, 0); mask.scale.set(0.85, 1.0, 0.5);
+      // HF unit + electrode with violet glow (left station)
+      H.box(0.7, 0.5, 0.5, 0xe7e5e4, 0, -1.45, -0.6, 0);
+      H.cyl(0.04, 0.04, 0.7, 0x9aa0ae, 0, -1.45, 0.0, 0);
+      H.sph(0.14, 0xc4b5fd, 0, -1.45, 0.45, 0);
+      const gl = new THREE.PointLight(0x8b5cf6, 1.6, 4); gl.position.set(-1.45, 0.45, 0); R.add(gl);
+      H.tor(0.3, 0.03, 0x8b5cf6, 0, -1.45, 0.45, 0, 0);
+      H.label('HF 5mm gap keep moving', -1.45, 1.5, 0, '#fff', 0.72);
+      // LED mask red/blue (centre station)
+      const mask = H.sph(0.55, 0x1f2937, 1, 0.1, 0.1, 0); mask.scale.set(0.85, 1.0, 0.5);
       const red = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 12),
         new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.35 }));
-      red.scale.set(0.85, 1.0, 0.5); red.position.set(0.3, 0.1, 0.08); R.add(red);
+      red.scale.set(0.85, 1.0, 0.5); red.position.set(0.1, 0.1, 0.08); R.add(red);
       tickers.push(t => red.material.color.setHSL((Math.sin(t * 0.8) > 0 ? 0 : 0.62), 0.85, 0.55));
-      H.label('LED red firm · blue clarify', 0.3, 1.0, 0, '#fff', 0.72);
-      // microcurrent probes + ultrasonic scrubber
+      H.label('LED red firm · blue clarify', 0.35, -1.05, 0.2, '#fff', 0.72);
+      // microcurrent probes + ultrasonic scrubber (right station)
       const pr1 = H.cyl(0.06, 0.09, 0.5, 0x0f766e, 2, 1.35, -0.2, 0.3);
       const pr2 = H.cyl(0.06, 0.09, 0.5, 0x0f766e, 2, 1.6, -0.2, 0.3);
       pr1.rotation.z = 0.4; pr2.rotation.z = -0.4;
-      H.label('MICROCURRENT up-glide + gel', 1.5, 0.4, 0.3, '#fff', 0.68);
+      H.label('MICROCURRENT up-glide + gel', 1.5, 0.5, 0.3, '#fff', 0.68);
       H.box(0.5, 0.06, 0.14, 0xd7dae1, 2, 1.45, -0.95, 0.3);
       H.label('ULTRASONIC scrubber', 1.45, -1.3, 0.3, '#fff', 0.68);
-      // goggles + log
-      H.tor(0.16, 0.05, 0x23272f, 3, -0.3, -1.0, 0.6, 0);
-      H.tor(0.16, 0.05, 0x23272f, 3, 0.2, -1.0, 0.6, 0);
-      H.box(0.7, 0.45, 0.05, 0xfffbeb, 3, -1.2, -1.35, 0.6);
-      H.label('GOGGLES + LOG settings', -0.5, -1.55, 0.6, '#fff', 0.68);
-      // contraindication tag
-      H.box(0.6, 0.35, 0.05, 0xfee2e2, 0, 0.3, -1.35, -0.9);
-      H.label('NO pacemaker/epilepsy/preg', 0.3, -0.95, -0.9, '#fff', 0.62);
+      // goggles + log (front row)
+      H.tor(0.16, 0.05, 0x23272f, 3, -0.5, -1.35, 0.6, 0);
+      H.tor(0.16, 0.05, 0x23272f, 3, 0.0, -1.35, 0.6, 0);
+      H.box(0.7, 0.45, 0.05, 0xfffbeb, 3, -1.45, -1.5, 0.6);
+      H.label('GOGGLES + LOG settings', -0.25, -1.75, 0.6, '#fff', 0.68);
+      // contraindication tag (top right, clear of stations)
+      H.box(0.6, 0.35, 0.05, 0xf87171, 0, 1.5, 1.35, -0.9);
+      H.label('NO pacemaker/epilepsy/preg', 1.5, 1.75, -0.9, '#fff', 0.62);
     },
 
     protocolArc(R, H) {
@@ -1305,9 +1304,13 @@
     const box = document.getElementById('threeBox');
     if (!wrap || !box) return;
     if (typeof THREE === 'undefined') {
+      // CDN still loading (slow network) — retry briefly before giving up
+      let tries = (window.__threeTries = (window.__threeTries || 0) + 1);
+      if (tries < 25) { setTimeout(window.initThree, 400); return; }
       box.innerHTML = '<p style="padding:20px">3D needs internet for the Three.js CDN — the written steps below still work.</p>';
       return;
     }
+    window.__threeTries = 0;
     if (booted) return; booted = true;
     const key = sceneKey();
     const entry = SCENES[key];
@@ -1318,7 +1321,7 @@
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x101220);
     const cam = new THREE.PerspectiveCamera(50, W / Hh, 0.1, 100);
-    cam.position.set(0, 1.0, 5.6);
+    cam.position.set(0, 1.0, 4.5);
     const ren = new THREE.WebGLRenderer({ antialias: true });
     ren.setSize(W, Hh); box.appendChild(ren.domElement);
     scene.add(new THREE.AmbientLight(0xffffff, 0.75));
@@ -1332,7 +1335,7 @@
     BUILDERS[entry.b](root, H);
     highlight(stepIdx);
 
-    let tx = 0, ty = 0.25, px = 0, py = 0.25, down = false, lx = 0, ly = 0, dist = 5.6;
+    let tx = 0, ty = 0.25, px = 0, py = 0.25, down = false, lx = 0, ly = 0, dist = 4.5;
     const el = ren.domElement; el.style.touchAction = 'none';
     el.addEventListener('pointerdown', e => { down = true; lx = e.clientX; ly = e.clientY; el.setPointerCapture(e.pointerId); });
     el.addEventListener('pointermove', e => {

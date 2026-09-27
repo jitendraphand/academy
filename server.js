@@ -71,7 +71,7 @@ app.get('/', (req, res) => {
   const stats = {
     courses: courses.length,
     modules: courses.reduce((a, c) => a + c.modules.length, 0),
-    quizzes: courses.reduce((a, c) => a + c.modules.reduce((x, m) => x + m.quiz.length, 0), 0),
+    quizzes: courses.reduce((a, c) => a + c.modules.reduce((x, m) => x + m.quiz.length + (m.quizMore || []).length, 0), 0),
     students: db.prepare("SELECT COUNT(*) c FROM users WHERE role='student'").get().c
   };
   res.render('index', { courses, stats });
