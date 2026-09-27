@@ -120,7 +120,7 @@ code{background:var(--surface2);border:1px solid var(--line);padding:2px 7px;bor
 .vstep span{font-size:28px}
 /* 3D lab keeps its dark equipment look */
 .three-wrap{background:#101220;border:1px solid #2a2d45;border-radius:16px;padding:10px;color:#cfd2e6}
-#threeBox{width:100%;height:340px;border-radius:12px;overflow:hidden;touch-action:none;background:#0a0a14}
+#threeBox{width:100%;height:520px;border-radius:12px;overflow:hidden;touch-action:none;background:#0a0a14}
 /* activities */
 .check{display:block;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:6px 0;cursor:pointer}
 .flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
@@ -148,10 +148,6 @@ tr:last-child td{border-bottom:0}
 .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .rowform{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin:8px 0}
 .footer{border-top:1px solid var(--line);padding:20px;text-align:center;color:var(--mut);margin-top:34px;background:#fff}
-/* blender reference plate */
-.plate{margin:0 0 10px;background:var(--surface2);border:1px solid var(--line2);border-radius:14px;padding:10px}
-.plate img{width:100%;height:auto;border-radius:10px;display:block}
-.plate figcaption{font-size:13px;margin-top:6px}
 /* depth pilot: deep dive + case + rubric */
 .deep{border-left:6px solid var(--teal)}
 .case{border-left:6px solid var(--gold);background:linear-gradient(180deg,#fffdf6,#fff)}
@@ -166,4 +162,4 @@ tr:last-child td{border-bottom:0}
 /* responsive — device agnostic */
 @media(max-width:860px){.hero{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}
   .steps{grid-template-columns:1fr 1fr}.admin-grid{grid-template-columns:1fr}.tl-row{grid-template-columns:1fr}.row2{grid-template-columns:1fr}}
-@media(max-width:520px){.steps{grid-template-columns:1fr}.wrap{padding:12px}.tabs{top:112px}.hero-art{min-height:220px}}
+@media(max-width:520px){.steps{grid-template-columns:1fr}.wrap{padding:12px}.tabs{top:112px}.hero-art{min-height:220px}#threeBox{height:380px}}

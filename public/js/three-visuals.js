@@ -17,12 +17,29 @@
         return m;
       },
       label(txt, x, y, z, color, s) {
-        const c = document.createElement('canvas'); c.width = 256; c.height = 64;
-        const g = c.getContext('2d'); g.font = 'bold 25px sans-serif';
-        g.textAlign = 'center'; g.fillStyle = color || '#fff'; g.fillText(txt, 128, 42);
+        // auto-wrap long labels onto two lines so text never clips at edges
+        let lines = [txt];
+        if (txt.length > 18 && !txt.includes('\n')) {
+          const words = txt.split(' ');
+          let best = 0, bi = 0;
+          for (let i = 1; i < words.length; i++) {
+            const a = words.slice(0, i).join(' ').length, b = words.slice(i).join(' ').length;
+            const score = Math.abs(a - b) + (words[i - 1].length < 3 ? 4 : 0);
+            if (i === 1 || score < best) { best = score; bi = i; }
+          }
+          lines = [words.slice(0, bi).join(' '), words.slice(bi).join(' ')];
+        } else if (txt.includes('\n')) lines = txt.split('\n');
+        const c = document.createElement('canvas');
+        const g = c.getContext('2d'); g.font = 'bold 24px sans-serif';
+        const tw = Math.ceil(Math.max(...lines.map(L => g.measureText(L).width))) + 28;
+        c.width = tw; c.height = lines.length > 1 ? 96 : 60;
+        g.font = 'bold 24px sans-serif';
+        g.textAlign = 'center'; g.fillStyle = color || '#fff';
+        lines.forEach((L, i) => g.fillText(L, tw / 2, lines.length > 1 ? 38 + i * 30 : 40));
         const t = new THREE.CanvasTexture(c);
         const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthTest: false }));
-        sp.position.set(x, y, z); const k = s || 1; sp.scale.set(2.1 * k, 0.52 * k, 1);
+        sp.position.set(x, y, z); const k = s || 1;
+        sp.scale.set(tw * 0.0078 * k, c.height * 0.0078 * k, 1);
         root.add(sp); return sp;
       },
       box(w, h, d, color, step, x, y, z) {
@@ -105,15 +122,6 @@
     SCENE = SCENES[k];
     const kick = document.getElementById('sceneKicker');
     if (kick) kick.textContent = '🔧 ' + SCENE.t;
-    const plate = PLATE_BY_BUILDER[SCENE.b];
-    const fig = document.getElementById('plateFig');
-    const img = document.getElementById('plateImg');
-    const cap = document.getElementById('plateCap');
-    if (plate && fig && img) {
-      img.onerror = () => { fig.style.display = 'none'; };
-      img.src = '/img/plates/' + plate + '.png';
-      if (cap) cap.textContent = PLATE_CAP[plate] || '';
-    } else if (fig) fig.style.display = 'none';
     showStep(0);
   }
   function showStep(i) {
@@ -382,28 +390,30 @@
         const a = i / 12 * Math.PI * 2;
         const sw = H.box(0.34, 0.34, 0.12,
           new THREE.Color().setHSL(i / 12, 0.8, 0.55).getHex(), 0,
-          Math.cos(a) * 1.05, Math.sin(a) * 1.05 + 0.3, 0);
+          Math.cos(a) * 0.95, Math.sin(a) * 0.95 + 0.45, 0);
         sw.rotation.z = a;
       }
-      H.label('WHEEL opposites kill', 0, 1.85, 0, '#fff', 0.8);
-      // neutraliser pairs
-      H.label('blue↔orange violet↔yellow', 0, -1.0, 0, '#fff', 0.65);
+      H.label('WHEEL opposites kill', -1.55, 1.35, 0, '#fff', 0.75);
+      // neutraliser pairs (wheel centre is empty)
+      H.label('blue↔orange violet↔yellow', 0, 0.45, 0, '#fff', 0.6);
       // level ladder 1-10
       for (let i = 0; i < 10; i++) {
         const c = new THREE.Color().setHSL(0.08, 0.5, 0.04 + i * 0.085);
         H.box(0.3, 0.14, 0.14, c.getHex(), 1, 1.75, -1.2 + i * 0.24, 0);
       }
       H.label('LEVELS 1 black→10 lightest', 1.75, 1.35, 0, '#fff', 0.7);
-      // developer bottles by height
-      const vols = [['10 deposit', 0.35, 0x2dd4bf], ['20 grey/1-2', 0.5, 0x8b5cf6], ['30 lift 2-3', 0.65, 0xf59e0b], ['40 max risk', 0.8, 0xe11d48]];
+      // developer bottles by height (tags below to avoid wheel collision)
+      const vols = [['10 deposit', 0.35, 0x2dd4bf], ['20 grey/1-2', 0.5, 0x8b5cf6], ['30 lift 2-3', 0.65, 0xf59e0b], ['40 max!', 0.8, 0xe11d48]];
       vols.forEach((v, i) => {
-        H.bottle(v[2], null, -1.9 + i * 0.5, -1.1, 0.9, v[1], v[0], 2);
+        const bx = -2.05 + i * 0.5;
+        H.bottle(v[2], null, bx, -0.9, 0.9, v[1], null, 2);
+        H.label(v[0], bx, -1.65, 0.9, '#fff', 0.6);
       });
       // scale + bowl + tests
       H.box(0.7, 0.08, 0.7, 0x9aa0ae, 3, -0.9, -1.35, -0.9);
       H.cyl(0.3, 0.22, 0.25, 0x6d28d9, 3, -0.9, -1.15, -0.9);
       H.sph(0.12, 0xf472b6, 3, 0.3, -1.25, -0.9);
-      H.label('WEIGH 1:1.5 + SKIN 48h + STRAND', -0.3, -0.7, -0.9, '#fff', 0.7);
+      H.label('WEIGH 1:1.5 + SKIN 48h + STRAND', 0.75, -1.6, -0.9, '#fff', 0.6);
     },
 
     retouchMap(R, H) {
@@ -521,12 +531,12 @@
       t.scale.set(0.7, 0.9, 0.6); t.position.set(0, 0.25, 0.18); t.material.transparent = true; t.material.opacity = 0.55; R.add(t);
       H.label('T-ZONE oily? cheeks?', 0, 1.35, 0.3, '#fff', 0.8);
       // loupe ring over cheek
-      H.tor(0.32, 0.045, 0x0f766e, 1, -0.45, -0.1, 0.55, 0);
-      H.label('LOUPE pores/flakes', -0.45, -0.65, 0.55, '#fff', 0.7);
+      H.tor(0.32, 0.045, 0x0f766e, 1, -0.55, -0.2, 0.55, 0);
+      H.label('LOUPE pores/flakes', -0.85, -0.55, 0.55, '#fff', 0.65);
       // blot papers
       H.box(0.3, 0.02, 0.2, 0xffffff, 2, 0.55, 0.5, 0.5);
       H.box(0.3, 0.02, 0.2, 0xfef3c7, 2, 0.55, -0.35, 0.5);
-      H.label('BLOT T vs cheeks', 0.55, 0.85, 0.5, '#fff', 0.7);
+      H.label('BLOT T vs cheeks', 1.15, 0.1, 0.5, '#fff', 0.65);
       // Wood's lamp glow
       const lamp = H.cyl(0.12, 0.16, 0.4, 0x312e81, 2, -1.3, 0.3, 0.6);
       const glow = new THREE.PointLight(0x8b5cf6, 1.4, 4); glow.position.set(-1.1, 0.3, 0.6); R.add(glow);
@@ -535,7 +545,7 @@
       H.cyl(0.2, 0.14, 0.14, 0x84cc16, 3, -0.5, -1.35, 0.3);
       H.cyl(0.2, 0.14, 0.14, 0xf9a8d4, 3, 0.2, -1.35, 0.3);
       H.cyl(0.2, 0.14, 0.14, 0x7dd3fc, 3, 0.9, -1.35, 0.3);
-      H.label('MULTI-MASK clay|cream|gel', 0.2, -1.0, 0.3, '#fff', 0.7);
+      H.label('MULTI-MASK clay|cream|gel', 0.5, -1.0, 0.3, '#fff', 0.65);
     },
     skinLayers(R, H) {
       const layers = [
@@ -1274,30 +1284,6 @@
     ]}
   };
 
-  // Blender-rendered reference plates (public/img/plates/*.png) per demo scene
-  const PLATE_BY_BUILDER = {
-    station: 'basin', strandLab: 'chembench', scalpScope: 'facial', basinService: 'basin',
-    shearSection: 'shears', elevationMap: 'shears', heatStyle: 'heat', updoLab: 'desk',
-    colorWheel: 'colour', retouchMap: 'colour', foilWork: 'colour', assessKit: 'desk',
-    skinRoom: 'facial', skinLayers: 'facial', faceAnalysis: 'facial', exfolBar: 'facial',
-    euroSteps: 'facial', massageFace: 'facial', lesionLib: 'facial', browWax: 'facial',
-    chemLab: 'chembench', deviceSuite: 'devices', protocolArc: 'devices', deskLoop: 'desk',
-    phBench: 'chembench', consultKit: 'chembench', bondLab: 'rods', rodPatterns: 'rods',
-    relaxMap: 'chembench', volBench: 'colour', liftTunnel: 'colour', dimensionLab: 'colour',
-    tonerBar: 'colour', safetyDrill: 'chembench', aftercareKit: 'basin', fixBench: 'desk'
-  };
-  const PLATE_CAP = {
-    shears: 'Reference plate (Blender): cutting shears + sectioning comb',
-    heat: 'Reference plate (Blender): dryer + round brush + infrared iron',
-    colour: 'Reference plate (Blender): tint bowl + brush + foils + developer + scale',
-    basin: 'Reference plate (Blender): basin + backwash bottles + towels',
-    facial: 'Reference plate (Blender): steamer + mask bowl + headband',
-    devices: 'Reference plate (Blender): high-frequency + LED + microcurrent',
-    chembench: 'Reference plate (Blender): beaker + pH strips + gloves + ventilation',
-    rods: 'Reference plate (Blender): perm rods + end papers + tail comb',
-    desk: 'Reference plate (Blender): ring light + camera + retail shelf'
-  };
-
   // ---------- engine ----------
   window.initThree = function () {
     const wrap = document.getElementById('threeWrap');
@@ -1317,7 +1303,7 @@
     if (!entry || !BUILDERS[entry.b]) {
       box.innerHTML = '<p style="padding:20px">Demo unavailable.</p>'; return;
     }
-    const W = box.clientWidth || 300, Hh = 340;
+    const W = box.clientWidth || 300, Hh = box.clientHeight || 520;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x101220);
     const cam = new THREE.PerspectiveCamera(50, W / Hh, 0.1, 100);
