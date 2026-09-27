@@ -50,10 +50,10 @@ blender -b --python blender/make_plates.py
 ```
 server.js            # routes, auth, admin, progress APIs
 db.js                # SQLite init + default admin seed
-data/hair.js         # 12 hair modules
-data/skin.js         # 12 skin modules
-data/chemical.js     # 12 chemical modules
-data/index.js        # course registry
+content/hair.js      # 12 hair modules
+content/skin.js      # 12 skin modules
+content/chemical.js  # 12 chemical modules
+content/index.js     # course registry (lives outside the DB volume so updates always deploy)
 views/               # EJS: index, login, register, dashboard, course, module, admin
 public/css/style.css # responsive device-agnostic UI
 public/js/app.js     # tabs, quiz, activities, progress calls

@@ -3,7 +3,7 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const db = require('./db');
-const { courses, getCourse } = require('./data');
+const { courses, getCourse } = require('./content');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
