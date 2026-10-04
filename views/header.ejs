@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><%= typeof title !== 'undefined' ? title + ' · ' : '' %>Salon Academy</title>
+<title><%= typeof title !== 'undefined' ? title + ' · ' : '' %>Salon Academy — Trainer</title>
 <link rel="stylesheet" href="/css/style.css">
 <script defer src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="/">Salon Academy</a>
+  <a class="brand" href="/">Salon Academy · Trainer</a>
   <nav>
     <% if (user) { %>
-      <span class="hello">Hi, <%= user.name.split(' ')[0] %> · <%= user.role %><% if (user.is_demo) { %> <span class="demo-badge">DEMO</span><% } %></span>
-      <% if (user.role === 'admin') { %><a class="btn small" href="/admin">Admin</a><% } else { %><a class="btn small" href="/dashboard">My Learning</a><% } %>
+      <span class="hello">Hi, <%= user.name.split(' ')[0] %> · Trainer</span>
+      <a class="btn small" href="/dashboard">Courses</a>
+      <a class="btn small ghost" href="/admin">Trainer panel</a>
       <a class="btn small ghost" href="/logout">Logout</a>
     <% } else { %>
-      <a class="btn small ghost" href="/login">Login</a>
-      <a class="btn small" href="/register">Register with code</a>
+      <a class="btn small" href="/login">Trainer login</a>
     <% } %>
   </nav>
 </header>

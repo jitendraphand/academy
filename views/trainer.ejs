@@ -1,0 +1,43 @@
+<%- include('header', { title: 'Trainer panel' }) %>
+<h1>🛠️ Trainer panel</h1>
+<p class="muted">Classroom command centre — no codes, no enrolments, no tracking. Just teach.</p>
+
+<div class="mini-stats">
+  <div><b><%= courses.length %></b><span>courses</span></div>
+  <div><b><%= courses.reduce((a,c)=>a+c.modules.length,0) %></b><span>modules open</span></div>
+  <div><b><%= standards.length %></b><span>global standards</span></div>
+  <div><b>55-min</b><span>lesson flow</span></div>
+</div>
+
+<div class="admin-grid">
+<section class="card">
+  <h2>📚 Courses — all unlocked</h2>
+  <% courses.forEach(c=>{ %>
+    <p><b><%= c.icon %> <%= c.title %></b> — <%= c.modules.length %> modules<br>
+    <span class="muted small"><%= courseStandards[c.id].join(' · ') %></span><br>
+    <a class="btn small" href="/course/<%= c.id %>">Teach →</a></p>
+  <% }) %>
+</section>
+<section class="card">
+  <h2>⏱️ Standard 55-min flow (every module)</h2>
+  <div class="tablewrap"><table>
+    <tr><th>Phase</th><th>Time</th><th>Do</th></tr>
+    <% flow.forEach(f=>{ %><tr><td><b><%= f.phase %></b></td><td><%= f.mins %></td><td><%= f.what %></td></tr><% }) %>
+  </table></div>
+</section>
+</div>
+
+<section class="card">
+  <h2>🌍 International standards we teach to</h2>
+  <div class="tablewrap"><table>
+    <tr><th>Framework</th><th>Body</th><th>Governs</th></tr>
+    <% standards.forEach(s=>{ %><tr><td><b><%= s.code %></b></td><td><%= s.body %></td><td><%= s.focus %></td></tr><% }) %>
+  </table></div>
+</section>
+
+<section class="card case">
+  <h2>🛡️ Safety golden rules — read one aloud each class</h2>
+  <ol><% rules.forEach(r=>{ %><li><%= r %></li><% }) %></ol>
+</section>
+
+<%- include('footer') %>

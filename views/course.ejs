@@ -1,31 +1,25 @@
 <%- include('header', { title: course.title }) %>
-<a href="/dashboard">← My Learning</a>
-<% if (user && user.is_demo) { %><div class="demo-banner">🎪 <b>Demo mode</b> — all 12 modules are open. Jump anywhere, no need to complete previous weeks.</div><% } %>
+<a href="/dashboard">← Course library</a>
+<div class="demo-banner">📽️ <b>Trainer mode</b> — all <%= course.modules.length %> modules are open. Teach in any order.</div>
 <div class="course-head" style="--c:<%= course.color %>">
   <div><span class="cc-icon big"><%= course.icon %></span></div>
   <div><h1><%= course.title %></h1><p><%= course.tagline %></p><p class="muted"><%= course.duration %> · <%= course.level %></p>
-  <div class="pbar"><div style="width:<%= progress.pct || 0 %>%"></div></div><p><b><%= progress.pct || 0 %>%</b> complete</p></div>
+  <p class="small">🌍 Standards: <%= standards.join(' · ') %></p></div>
 </div>
 <p><%= course.description %></p>
-<h3>What you'll be able to do</h3>
+<h3>What trainees will be able to do</h3>
 <ul class="ticks"><% course.outcomes.forEach(o=>{ %><li>✓ <%= o %></li><% }) %></ul>
-<h2>🗓️ 12-week journey</h2>
+<h2>🗓️ All modules — pick any</h2>
 <div class="timeline">
-<% course.modules.forEach((m, i) => { 
-  const st = progress.byIdx ? progress.byIdx[i] : null;
-  const locked = !unlocks[i];
-%>
-  <div class="tl-row <%= locked ? 'locked' : '' %> <%= st && st.completed ? 'done' : '' %>">
+<% course.modules.forEach((m, i) => { %>
+  <div class="tl-row">
     <div class="tl-week"><%= m.weekLabel %><br><small><%= m.hours %></small></div>
     <div class="tl-body">
-      <h3><%= locked ? '🔒' : (st && st.completed ? '✅' : '○') %> <%= i+1 %>. <%= m.title %></h3>
+      <h3>○ <%= i+1 %>. <%= m.title %></h3>
       <p class="muted"><%= m.objectives.slice(0,2).join(' · ') %></p>
       <div class="row">
-        <% if (locked) { %><span class="muted">Complete previous module to unlock</span><% } else { %>
-        <a class="btn small" href="/course/<%= course.id %>/module/<%= i %>">Open module →</a>
-        <% if (st && st.quiz_best != null) { %><span class="chip">Quiz best <%= st.quiz_best %>/<%= st.quiz_total %></span><% } %>
-        <% if (st && st.practical_done) { %><span class="chip green">Practical ✓</span><% } %>
-        <% } %>
+        <a class="btn small" href="/course/<%= course.id %>/module/<%= i %>">Teach this →</a>
+        <span class="chip"><%= m.activity.type %> · classroom</span>
       </div>
     </div>
   </div>

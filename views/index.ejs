@@ -2,23 +2,27 @@
 
 <section class="hero">
   <div class="hero-text">
-    <div class="pill">3 courses · 36 weeks · salon-based practicals</div>
-    <h1>Become salon-ready in <span class="grad">Hair, Skin & Chemical</span></h1>
-    <p>High-standard, highly visual training with 3D labs, interactive activities, quizzes and real in-salon practicals. Learn 2–3 hours a week for 3 months per course — on any phone, tablet or desktop.</p>
+    <div class="pill">Trainer mode · 3 courses · 36 modules · all unlocked</div>
+    <h1>Teach <span class="grad">Hair, Skin & Chemical</span> on the big screen</h1>
+    <p>Single trainer login for classroom projection. Pick any module in any order — theory, 3D lab, classroom activity, knowledge check and salon application, aligned to CIDESCO / CIBTAC / VTCT / HABIA / WHO standards.</p>
     <div class="cta-row">
-      <a class="btn big" href="/register">🎟️ Register with invite code</a>
-      <a class="btn big ghost" href="/login">Login</a>
+      <% if (user) { %>
+        <a class="btn big" href="/dashboard">📚 Open course library →</a>
+        <a class="btn big ghost" href="/admin">🛠️ Trainer panel</a>
+      <% } else { %>
+        <a class="btn big" href="/login">Trainer login →</a>
+      <% } %>
     </div>
     <div class="mini-stats">
       <div><b><%= stats.modules %></b><span>modules</span></div>
       <div><b><%= stats.quizzes %></b><span>quiz questions</span></div>
       <div><b>3D</b><span>visual labs</span></div>
-      <div><b>36</b><span>salon practicals</span></div>
+      <div><b><%= stats.standards %></b><span>global standards</span></div>
     </div>
   </div>
   <div class="hero-art">
     <div class="orb o1">💇</div><div class="orb o2">✨</div><div class="orb o3">⚗️</div>
-    <div class="hero-card">📱💻 Device agnostic<br><small>mobile-first · offline-friendly text · touch 3D</small></div>
+    <div class="hero-card">📽️ Classroom projector ready<br><small>big text · touch 3D · oral drills, no logins for trainees</small></div>
   </div>
 </section>
 
@@ -32,19 +36,30 @@
     <ul class="ticks">
       <% c.outcomes.slice(0,3).forEach(o => { %><li>✓ <%= o %></li><% }) %>
     </ul>
-    <div class="cc-foot"><span><%= c.modules.length %> modules · quiz + practical each</span><a class="btn small" href="/register">Get access →</a></div>
+    <div class="cc-foot"><span><%= c.modules.length %> modules · all open</span>
+      <% if (user) { %><a class="btn small" href="/course/<%= c.id %>">Teach this →</a><% } else { %><a class="btn small" href="/login">Login to teach →</a><% } %>
+    </div>
   </article>
   <% }) %>
 </section>
 
 <section class="how">
-  <h2>How it works</h2>
+  <h2>How classroom teaching works</h2>
   <div class="steps">
-    <div><b>1</b><h3>Admin generates code</h3><p>Admin creates a single- or multi-use invite code for Hair, Skin, Chemical or ALL.</p></div>
-    <div><b>2</b><h3>Student registers</h3><p>Candidate registers with name, email, phone, password + code. Access is granted instantly.</p></div>
-    <div><b>3</b><h3>Learn + practise</h3><p>Weekly module: theory → 3D lab → interactive activity → quiz (60% to pass) → in-salon practical.</p></div>
-    <div><b>4</b><h3>Admin tracks</h3><p>Progress %, quiz bests and practical notes visible per student. Grant/revoke anytime.</p></div>
+    <div><b>1</b><h3>Trainer logs in</h3><p>One login on the classroom screen. No student accounts, codes or enrolments.</p></div>
+    <div><b>2</b><h3>Pick any module</h3><p>All 12 modules per course are unlocked. Jump to whatever the class needs.</p></div>
+    <div><b>3</b><h3>Teach the flow</h3><p>Learn → 3D Lab → classroom activity → oral test → salon application. 55-min lesson plan on every page.</p></div>
+    <div><b>4</b><h3>Meet global standards</h3><p>Every module tagged to CIDESCO / CIBTAC / VTCT / HABIA / WHO / EU / ISO practice.</p></div>
   </div>
+</section>
+
+<section class="card">
+  <h2>🌍 International standards alignment</h2>
+  <p class="muted">Depth + breadth benchmark: anatomy & barrier science, RAG consultation, infection control, chemical safety, Fitzpatrick gating, ethics + aftercare.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Framework</th><th>Body</th><th>What it governs here</th></tr>
+    <% standards.forEach(s => { %><tr><td><b><%= s.code %></b></td><td><%= s.body %></td><td><%= s.focus %></td></tr><% }) %>
+  </table></div>
 </section>
 
 <%- include('footer') %>

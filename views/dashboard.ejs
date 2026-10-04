@@ -1,17 +1,15 @@
-<%- include('header', { title: 'My Learning' }) %>
-<h1>📚 My Learning</h1>
-<% if (!cards.length) { %>
-  <div class="card"><h3>No courses yet</h3><p>Ask your admin to grant you access (Admin → Grant access).</p></div>
-<% } %>
+<%- include('header', { title: 'Course library' }) %>
+<h1>📚 Course library — all open</h1>
+<p class="muted">Trainer picks any course and any module. No locks, no progress tracking — pure classroom teaching.</p>
 <div class="grid3">
-<% cards.forEach(({course, progress}) => { %>
+<% courses.forEach((course) => { %>
   <article class="course-card" style="--c:<%= course.color %>">
-    <div class="cc-top"><span class="cc-icon"><%= course.icon %></span><span class="cc-dur"><%= progress.completed %>/<%= progress.total %> done</span></div>
+    <div class="cc-top"><span class="cc-icon"><%= course.icon %></span><span class="cc-dur"><%= course.modules.length %> modules</span></div>
     <h2><%= course.title %></h2>
     <p class="muted"><%= course.tagline %></p>
-    <div class="pbar"><div style="width:<%= progress.pct %>%"></div></div>
-    <p><b><%= progress.pct %>%</b> complete</p>
-    <a class="btn" href="/course/<%= course.id %>"><%= progress.pct ? 'Continue →' : 'Start →' %></a>
+    <p class="small"><%= course.duration %> · <%= course.level %></p>
+    <p class="small muted">Standards: <%= (courseStandards[course.id] || []).join(' · ') %></p>
+    <a class="btn" href="/course/<%= course.id %>">Open modules →</a>
   </article>
 <% }) %>
 </div>

@@ -1,7 +1,7 @@
 {
   "name": "salon-academy",
   "version": "1.0.0",
-  "description": "Salon Academy — Hair, Skin & Chemical courses with admin codes, progress, 3D labs, quizzes and practicals",
+  "description": "Salon Academy trainer mode — Hair, Skin & Chemical classroom teaching, all modules unlocked, 3D labs, CIDESCO/CIBTAC/VTCT-aligned",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -11,8 +11,7 @@
     "bcryptjs": "^2.4.3",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
-    "express-session": "^1.18.0",
-    "uuid": "^9.0.1"
+    "express-session": "^1.18.0"
   },
   "engines": {
     "node": ">=18"
